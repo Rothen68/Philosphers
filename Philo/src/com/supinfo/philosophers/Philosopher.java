@@ -4,8 +4,13 @@ public class Philosopher extends Thread implements Runnable {
 
 	private String name;
 	
-	public Philosopher(String name) {
+	private Fork leftFork;
+	private Fork rightFork;
+	
+	public Philosopher(String name, Fork left, Fork right) {
 		this.name = name;
+		leftFork = left;
+		rightFork = right;
 	}
 	
 	@Override
@@ -14,8 +19,15 @@ public class Philosopher extends Thread implements Runnable {
 		{
 			try
 			{
+				if(!leftFork.isUsed() && !rightFork.isUsed())
+				{
+					leftFork.use();
+					rightFork.use();
+					eat();
+					leftFork.release();
+					rightFork.release();
+				}
 				think();
-				eat();
 			}
 			catch ( InterruptedException ex)
 			{
@@ -33,8 +45,9 @@ public class Philosopher extends Thread implements Runnable {
 	
 	private void eat() throws InterruptedException
 	{
-		System.out.println("Philosopher " + name + " is eating" );
+		System.out.println("Philosopher " + name + " is eating with " + leftFork.getName() + " and " + rightFork.getName() );
 		sleep(random());
+		System.out.println("Philosopher " + name + " stops eating");
 	}
 	
 	private int random ()
